@@ -1,0 +1,101 @@
+typedef unsigned long ulong;
+typedef unsigned char uchar;
+typedef unsigned char byte;
+using namespace std;
+
+
+#define ROWS            200
+#define COLS            320
+#define N               8
+#define ROUND(a)      (((a)<0)?(int)((a)-0.5):\(int)((a)+0.5))
+#define BYTE_TO_WORD(x) (((x)[0]<<8)|(x)[1])
+uchar PixelStrip[N][COLS];
+double C[N][N];
+double Ct[N][N];
+int InputRunLength;
+int OutputRunLength;
+int Quantum[N][N];
+
+/*
+
+#include <jpeglib.h>
+//Saving debug information to a log file
+
+extern void dprintf(const char *fmt, ...);
+*/
+
+
+//Jpeg file structure 
+#define DQT      0xFFDB    // Define Quantization Table()
+/*
+Specifies one or more quantization tables.
+*/
+
+#define SOF      0xFFC0    // Start of Frame (size information)
+/*
+Indicates that this is a baseline DCT-based JPEG, and specifies the width, 
+height, number of components, and component subsampling (e.g., 4:2:0).
+*/
+
+#define DHT      0xFFC4    // Huffman Table
+/*
+Specifies one or more Huffman tables.
+ */
+
+#define SOI      0xFFD8    // Start of Image
+
+#define SOS      0xFFDA    // Start of Scan
+/*
+Begins a top-to-bottom scan of the image. In baseline DCT JPEG images, 
+there is generally a single scan. Progressive DCT JPEG images usually contain 
+multiple scans. This marker specifies which slice of data it will contain, 
+and is immediately followed by entropy-coded data.
+*/
+
+static int Quality90[64]=
+{
+    3,  2,  2,  3,  5,  8,  10, 12,
+    2,  2,  3,  4,  5,  12, 12, 11,
+    3,  3,  3,  4,  8,  11, 14, 11,
+    3,  3,  4,  6,  10, 17, 16, 12,
+    4,  4,  7,  11, 14, 22, 21, 15,
+    5,  7,  11, 13, 16, 21, 23, 18,
+    10, 13, 16, 17, 21, 24, 24, 20,
+    14, 18, 19, 20, 22, 20, 21, 20,
+};
+
+static int Quality50[64]=
+{
+    16, 11, 10, 16, 24,  40,  51,  61,
+    12, 12, 14, 19, 26,  58,  60,  55,
+    14, 13, 16, 24, 40,  57,  69,  56,
+    14, 17, 22, 29, 51,  87,  80,  62,
+    18, 22, 37, 56, 68,  109, 103, 77,
+    24, 35, 55, 64, 81,  104, 113, 92,
+    49, 64, 78, 87, 103, 121, 120, 101,
+    72, 92, 95, 98, 112, 100, 103, 99
+};
+
+static int Quality5[64]=
+{
+   160, 110, 100, 160, 240, 255, 255, 255,
+   120, 120, 140, 190, 255, 255, 255, 255,
+   140, 130, 160, 240, 255, 255, 255, 255,
+   140, 170, 220, 255, 255, 255, 255, 255,
+   180, 220, 255, 255, 255, 255, 255, 255,
+   240, 255, 255, 255, 255, 255, 255, 255,
+   255, 255, 255, 255, 255, 255, 255, 255,
+   255, 255, 255, 255, 255, 255, 255, 255,
+};
+
+static int ZigZagArray[64] =
+{
+    0,   1,   5,  6,   14,  15,  27,  28,
+    2,   4,   7,  13,  16,  26,  29,  42,
+    3,   8,  12,  17,  25,  30,  41,  43,
+    9,   11, 18,  24,  31,  40,  44,  53,
+    10,  19, 23,  32,  39,  45,  52,  54,
+    20,  22, 33,  38,  46,  51,  55,  60,
+    21,  34, 37,  47,  50,  56,  59,  61,
+    35,  36, 48,  49,  57,  58,  62,  63,
+};
