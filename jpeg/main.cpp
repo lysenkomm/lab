@@ -14,7 +14,7 @@ limitations under the License.
 /* 
  * File:   main.cpp
  * Author: asttoggie
- * BMP24 to JPEG
+ * 
  * Created on October 11, 2016, 11:51 PM
  */
 
