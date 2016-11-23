@@ -23,8 +23,29 @@ limitations under the License.
 #include <stdarg.h> //dprintf(..)
 #include <math.h> // sqrt(..), cos(..)
 
-int main(int argc, char** argv) {
-
+int main(int argc, char** argv) 
+{    
+    ///////////Convert RGB to YUB///////////////////
+    int a,          //lengh line
+        b,          //number columns
+        R[a][b],    //array R
+        G[a][b],    //array G
+        B[a][b],    //array B
+        Y[a][b],    //array Y
+        U[a][b],    //array U
+        V[a][b];    //array V
+    
+    for (int i = 0; i < a; i ++)
+    {
+        for (int q = 0; q < b; q ++)
+        {
+            Y[i][q] = (R[i][q] + (2 * G[i][q]) + V[i][q]) / 4;
+            U[i][q] = R[i][q] - G[i][q];
+            V[i][q] = B[i][q] - G[i][q];
+        }
+    }
+    
+          
   return 0;
 }
 
