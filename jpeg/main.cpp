@@ -48,7 +48,31 @@ int main(int argc, char** argv)
           
   return 0;
 }
+void CompressFile( FILE *input, BFILE *output, int quality ) 
+{ 
+int row; 
+int col; 
+int i; 
+uchar *input_array[N]; 
+int output_array[N][N]; 
 
+if ( quality < 0 || quality > 50 ) 
+return; 
+Initialize( quality ); 
+OutputBits( output, (ulong) quality, 8 ); 
+for ( row = 0 ; row < ROWS ; row += N ) 
+{ 
+ReadPixelStrip( input, PixelStrip ); 
+for ( col = 0 ; col < COLS ; col += N ) 
+{ 
+for ( i = 0 ; i < N ; i++ ) 
+input_array[i] = PixelStrip[i] + col; 
+ForwardDCT( input_array, output_array ); 
+WriteDCTData( output, output_array ); 
+} 
+} 
+OutputCode( output, 1 ); 
+}
 
 /*
  char *JpgFileInName = "test.jpg";
